@@ -13,9 +13,9 @@ urlpatterns = patterns('',
 
     # Demo Override the signup form with our own, which includes a 
     # first and last name.
-    # (r'^accounts/signup/$',
-    #  'userena.views.signup',
-    #  {'signup_form': SignupFormExtra}),
+     (r'^accounts/signup/$',
+      'userena.views.signup',
+      {'signup_form': SignupFormOnePassword}),
                      
     (r'^accounts/', include('userena.urls')),
     (r'^messages/', include('userena.contrib.umessages.urls')),

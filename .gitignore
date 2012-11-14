@@ -1,6 +1,7 @@
 # Setup.py
 *.egg
 *egg-info
+
 # Documentation
 _build
 build
@@ -34,3 +35,7 @@ demo_project/media/admin
 
 # Temp vim files
 *.swp
+
+.project
+.pydevproject
+venv/
