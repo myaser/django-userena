@@ -33,6 +33,7 @@ class SignupForm(forms.Form):
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
                                                            render_value=False),
                                 label=_("Create password"))
+#    import pdb; pdb.set_trace()
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
                                                            render_value=False),
                                 label=_("Repeat password"))
@@ -240,3 +241,16 @@ class EditProfileForm(forms.ModelForm):
         user.save()
 
         return profile
+
+class SignupFormOnePassword(SignupForm):
+    def __init__(self, *args, **kwargs):
+        super(SignupFormOnePassword, self).__init__(*args, **kwargs)
+        del self.fields['password2']
+    def clean(self):
+        return self.cleaned_data
+
+class FastAccessForm(SignupFormOnlyEmail, SignupFormOnePassword):
+    SignupFormOnePassword.base_fields['password1'] = forms.CharField(
+                                                widget=forms.PasswordInput(attrs=attrs_dict,
+                                                                    render_value=False),
+                                                label=_("password"))

@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from userena.forms import SignupForm
+from userena.forms import SignupForm, SignupFormOnlyEmail, SignupFormOnePassword
 
 class SignupFormExtra(SignupForm):
     """ 
@@ -48,3 +48,6 @@ class SignupFormExtra(SignupForm):
         # Userena expects to get the new user from this form, so return the new
         # user.
         return new_user
+
+class SignupFormSmart(SignupFormOnlyEmail, SignupFormOnePassword):
+    pass

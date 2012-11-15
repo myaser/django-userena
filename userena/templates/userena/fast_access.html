@@ -1,0 +1,22 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Fast Access" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+  {% csrf_token %}
+  <fieldset>
+    <legend>{% trans "Fast Access" %}</legend>
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    {{ field.errors }}
+    <p>
+    {{ field.label_tag }} 
+    {{ field }}
+    </p>
+    {% endfor %}
+  </fieldset>
+  <input type="submit" value="{% trans "Fast Access" %}" />
+</form>
+{% endblock %}
