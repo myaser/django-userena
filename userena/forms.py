@@ -60,7 +60,7 @@ class SignupForm(forms.Form):
         """ Validate that the e-mail address is unique. """
         if User.objects.filter(email__iexact=self.cleaned_data['email']):
             if UserenaSignup.objects.filter(user__email__iexact=self.cleaned_data['email']).exclude(activation_key=userena_settings.USERENA_ACTIVATED):
-                raise forms.ValidationError(_('This email is already in use but not confirmed. Please check you email for verification steps.'))
+                raise forms.ValidationError(_('This email is already in use but not confirmed. Please check your email for verification steps.'))
             raise forms.ValidationError(_('This email is already in use. Please supply a different email.'))
         return self.cleaned_data['email']
 
@@ -172,7 +172,10 @@ class AuthenticationForm(forms.Form):
         if identification and password:
             user = authenticate(identification=identification, password=password)
             if user is None:
-                raise forms.ValidationError(_(u"Please enter a correct username or email and password. Note that both fields are case-sensitive."))
+                if userena_settings.USERENA_WITHOUT_USERNAMES:
+                    raise forms.ValidationError(_(u"Please enter a correct email and password. Note that both fields are case-sensitive."))
+                else:
+                    raise forms.ValidationError(_(u"Please enter a correct username or email and password. Note that both fields are case-sensitive."))
         return self.cleaned_data
 
 class ChangeEmailForm(forms.Form):
@@ -242,14 +245,37 @@ class EditProfileForm(forms.ModelForm):
         return profile
 
 class SignupFormOnePassword(SignupForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict,
+                                                           render_value=False),
+                                label=_("password"))
+
     def __init__(self, *args, **kwargs):
         super(SignupFormOnePassword, self).__init__(*args, **kwargs)
+        del self.fields['password1']
         del self.fields['password2']
     def clean(self):
         return self.cleaned_data
 
 class FastAccessForm(SignupFormOnlyEmail, SignupFormOnePassword):
-    SignupFormOnePassword.base_fields['password1'] = forms.CharField(
-                                                widget=forms.PasswordInput(attrs=attrs_dict,
-                                                                    render_value=False),
-                                                label=_("password"))
+    
+    def clean_email(self):
+        return self.cleaned_data['email']
+
+    def clean(self):
+        """  """
+        if User.objects.filter(email__iexact=self.cleaned_data['email']):
+            if UserenaSignup.objects.filter(user__email__iexact=self.cleaned_data['email']).exclude(activation_key=userena_settings.USERENA_ACTIVATED):
+                raise forms.ValidationError(_('This email is already in use but not confirmed. Please check your email for verification steps.'))
+            user = authenticate(identification=self.cleaned_data['email'],
+                                password=self.cleaned_data['password'])
+            if user is None:
+                raise forms.ValidationError(_(u"wrong password, Please enter the correct one."))
+            else:
+                self.cleaned_data.update({'decision': 'signin'})
+        else:
+            self.cleaned_data.update({'decision': 'signup'})
+        return self.cleaned_data
+
+    def save(self):
+        self.cleaned_data['password1'] = self.cleaned_data.pop('password')
+        return super(FastAccessForm, self).save()

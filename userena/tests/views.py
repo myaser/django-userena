@@ -315,3 +315,7 @@ class UserenaViewsTests(ProfileTestCase):
         userena_settings.USERENA_DISABLE_PROFILE_LIST = True
         response = self.client.get(reverse('userena_profile_list'))
         self.assertEqual(response.status_code, 404)
+        
+    def test_fast_access_view(self):
+        # TODO
+        pass

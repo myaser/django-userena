@@ -7,7 +7,6 @@ from userena import settings as userena_settings
 class SignupFormTests(TestCase):
     """ Test the signup form. """
     fixtures = ['users']
-
     def test_signup_form(self):
         """
         Test that the ``SignupForm`` checks for unique usernames and unique
@@ -81,14 +80,24 @@ class AuthenticationFormTests(TestCase):
         Check that the ``SigninForm`` requires both identification and password
 
         """
-        invalid_data_dicts = [
-            {'data': {'identification': '',
-                      'password': 'inhalefish'},
-             'error': ('identification', [u'Either supply us with your email or username.'])},
-            {'data': {'identification': 'john',
-                      'password': 'inhalefish'},
-             'error': ('__all__', [u'Please enter a correct username or email and password. Note that both fields are case-sensitive.'])}
-        ]
+        if userena_settings.USERENA_WITHOUT_USERNAMES:
+            invalid_data_dicts = [
+                {'data': {'identification': '',
+                          'password': 'inhalefish'},
+                 'error': ('identification', [u'Please supply your email.'])},
+                {'data': {'identification': 'john',
+                          'password': 'inhalefish'},
+                 'error': ('__all__', [u'Please enter a correct email and password. Note that both fields are case-sensitive.'])}
+            ]
+        else:
+            invalid_data_dicts = [
+                {'data': {'identification': '',
+                          'password': 'inhalefish'},
+                 'error': ('identification', [u'Either supply us with your email or username.'])},
+                {'data': {'identification': 'john',
+                          'password': 'inhalefish'},
+                 'error': ('__all__', [u'Please enter a correct username or email and password. Note that both fields are case-sensitive.'])}
+            ]
 
         for invalid_dict in invalid_data_dicts:
             form = forms.AuthenticationForm(data=invalid_dict['data'])
@@ -102,7 +111,6 @@ class AuthenticationFormTests(TestCase):
             {'identification': 'john@example.com',
              'password': 'blowfish'}
         ]
-
         for valid_dict in valid_data_dicts:
             form = forms.AuthenticationForm(valid_dict)
             self.failUnless(form.is_valid())
@@ -190,3 +198,72 @@ class ChangeEmailFormTests(TestCase):
 class EditAccountFormTest(TestCase):
     """ Test the ``EditAccountForm`` """
     pass
+
+class SignupFormOnePasswordTest(TestCase):
+    """
+    Test the :class:`SignupFormOnePassword`.
+
+    This is the same form as :class:`SignupForm` but doesn't require to
+    duplicate password.
+
+    """
+    def test_signup_one_password(self):
+        """
+        Test that the form has no password2 field. And that the user
+        can signup using only one password field
+
+        """
+        valid_data = {'username': 'hans',
+                      'email': 'hans@gretel.com',
+                      'password': 'blowfish'}
+
+        form = forms.SignupFormOnePassword(data=valid_data)
+        
+        # Should have no password1 or password2 field
+        self.failIf(form.fields.get('password1', False))
+        self.failIf(form.fields.get('password2', False))
+        
+        # Form should be valid.
+        self.failUnless(form.is_valid())
+
+
+class FastAccessFormTest(TestCase):
+    """ Test the :class:`FastAccessForm`.
+    """
+    fixtures = ['users']
+    def test_fast_access_form(self):
+        """ test that 
+        """
+        invalid_data_dicts = [
+            # registered but not confirmed e-mail
+            {'data': {'email': 'myaser@example.com',
+                      'password': 'blowfish'},
+             'error': ('__all__', [u'This email is already in use but not confirmed. Please check your email for verification steps.'])},
+
+            # confirmed e-mail but wrong password
+            {'data': {'email': 'john@example.com',
+                      'password': 'wrongpassword'},
+             'error': ('__all__', [u'wrong password, Please enter the correct one.'])},
+        ]
+        for invalid_dict in invalid_data_dicts:
+            form = forms.FastAccessForm(data=invalid_dict['data'])
+            self.failIf(form.is_valid())
+            self.assertEqual(form.errors[invalid_dict['error'][0]],
+                             invalid_dict['error'][1])
+        valid_data_dicts = [
+            # registered with correct password (signin)
+            {'email': 'john@example.com',
+             'password': 'blowfish'},
+
+            # not registered user action (signup)
+            {'email': 'newuser@example.com',
+             'password': 'blowfish'},
+        ]
+        form = forms.FastAccessForm(data=valid_data_dicts[0])
+        self.failUnless(form.is_valid())
+        self.assertEqual(form.cleaned_data['decision'], 'signin')
+        
+        form = forms.FastAccessForm(data=valid_data_dicts[1])
+        self.failUnless(form.is_valid())
+        self.assertEqual(form.cleaned_data['decision'], 'signup')
+            

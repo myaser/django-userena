@@ -691,8 +691,58 @@ def profile_list(request, page=1, template_name='userena/profile_list.html',
 
 @secure_required
 def fast_access(request, access_form=FastAccessForm,
-                template_name='userena/fast_access.html'):
+                template_name='userena/fast_access.html',
+                success_url=None, extra_context=None,
+                redirect_field_name=REDIRECT_FIELD_NAME,
+                redirect_signin_function=signin_redirect):
+
     form = access_form()
-    extra_context = {'form': form}
+    if request.method == 'POST':
+        form = access_form(request.POST, request.FILES)
+
+        if form.is_valid():
+            if form.cleaned_data['decision']=='signin':
+                email = form.cleaned_data['email']
+                password = form.cleaned_data['password']
+                user = authenticate(identification=email,
+                                password=password)
+                if user.is_active:
+                    login(request, user)
+                    request.session.set_expiry(0)
+    
+                    if userena_settings.USERENA_USE_MESSAGES:
+                        messages.success(request, _('You have been signed in.'),
+                                         fail_silently=True)
+    
+                    # Whereto now?
+                    redirect_to = redirect_signin_function(
+                        request.REQUEST.get(redirect_field_name), user)
+                    return redirect(redirect_to)
+                else:
+                    return redirect(reverse('userena_disabled',
+                                            kwargs={'username': user.username}))
+
+            elif form.cleaned_data['decision']=='signup':
+                user = form.save()
+
+                # Send the signup complete signal
+                userena_signals.signup_complete.send(sender=None,
+                                                     user=user)
+    
+    
+                if success_url: redirect_to = success_url
+                else: redirect_to = reverse('userena_signup_complete',
+                                            kwargs={'username': user.username})
+    
+                # A new signed user should logout the old one.
+                if request.user.is_authenticated():
+                    logout(request)
+                return redirect(redirect_to)
+    
+    if not extra_context: extra_context = dict()
+    extra_context.update({
+        'form': form,
+        'next': request.REQUEST.get(redirect_field_name),
+    })
     return ExtraContextTemplateView.as_view(template_name=template_name,
                                             extra_context=extra_context)(request)

@@ -54,8 +54,6 @@ DOCUMENT_ROOT = abspath(PROJECT_ROOT, 'docs')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
-ADMIN_MEDIA_PREFIX = '/media/admin/'
-
 SECRET_KEY = 'sx405#tc)5m@s#^jh5l7$k#cl3ekg)jtbo2ds(n(kw@gp0t7x@'
 
 TEMPLATE_LOADERS = (

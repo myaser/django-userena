@@ -30,6 +30,8 @@ pip-log.txt
 demo_project/demo_project.db
 demo_project/settings_production.py
 demo_project/media/admin
+demo_project/static/
+*.db
 
 # Compiled
 *.pyc
