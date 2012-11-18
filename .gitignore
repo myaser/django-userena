@@ -1,6 +1,7 @@
 # Setup.py
 *.egg
 *egg-info
+
 # Documentation
 _build
 build
@@ -13,6 +14,7 @@ lib64
 include/
 src/
 dist/
+venv/
 
 # Certificates
 certs/
@@ -34,3 +36,7 @@ demo_project/media/admin
 
 # Temp vim files
 *.swp
+
+# eclipse
+.project
+.pydevproject

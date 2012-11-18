@@ -17,7 +17,14 @@ urlpatterns = patterns('',
     url(r'^signout/$',
        userena_views.signout,
        name='userena_signout'),
-
+)
+if userena_settings.USERENA_WITHOUT_USERNAMES:
+    urlpatterns += patterns('',
+        url(r'^access/',
+           userena_views.fast_access,
+           name='userena_fast_access'),
+    )
+urlpatterns += patterns('',
     # Reset password
     url(r'^password/reset/$',
        auth_views.password_reset,

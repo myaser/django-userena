@@ -48,9 +48,11 @@ USE_I18N = True
 USE_L10N = True
 
 MEDIA_ROOT = abspath(PROJECT_ROOT, 'media')
+STATIC_ROOT = abspath(PROJECT_ROOT, 'static')
 DOCUMENT_ROOT = abspath(PROJECT_ROOT, 'docs')
 
 MEDIA_URL = '/media/'
+STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
@@ -69,6 +71,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'userena.middleware.UserenaLocaleMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -98,7 +101,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'django.contrib.staticfiles',
     'easy_thumbnails',
+    'django_extensions',
+    'debug_toolbar',
     'guardian',
     'south',
     'userena',
@@ -111,6 +117,7 @@ LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
 LOGOUT_URL = '/accounts/signout/'
 AUTH_PROFILE_MODULE = 'profiles.Profile'
+USERENA_WITHOUT_USERNAMES = True
 
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_MUGSHOT_SIZE = 140
@@ -121,3 +128,18 @@ SOUTH_TESTS_MIGRATE = False
 
 # Guardian
 ANONYMOUS_USER_ID = -1
+
+INTERNAL_IPS = ('127.0.0.1',)
+
+DEBUG_TOOLBAR_PANELS = (
+    'debug_toolbar.panels.version.VersionDebugPanel',
+    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+    'debug_toolbar.panels.headers.HeaderDebugPanel',
+    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+    'debug_toolbar.panels.template.TemplateDebugPanel',
+    'debug_toolbar.panels.sql.SQLDebugPanel',
+    'debug_toolbar.panels.signals.SignalDebugPanel',
+    'debug_toolbar.panels.logger.LoggingPanel',
+)
+INTERCEPT_REDIRECTS = True

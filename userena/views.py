@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseForbidden, Http404
 
 from userena.forms import (SignupForm, SignupFormOnlyEmail, AuthenticationForm,
-                           ChangeEmailForm, EditProfileForm)
+                           ChangeEmailForm, EditProfileForm, FastAccessForm)
 from userena.models import UserenaSignup
 from userena.decorators import secure_required
 from userena.backends import UserenaAuthenticationBackend
@@ -688,3 +688,11 @@ def profile_list(request, page=1, template_name='userena/profile_list.html',
                                    extra_context=extra_context,
                                    template_object_name='profile',
                                    **kwargs)
+
+@secure_required
+def fast_access(request, access_form=FastAccessForm,
+                template_name='userena/fast_access.html'):
+    form = access_form()
+    extra_context = {'form': form}
+    return ExtraContextTemplateView.as_view(template_name=template_name,
+                                            extra_context=extra_context)(request)
