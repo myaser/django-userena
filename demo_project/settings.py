@@ -52,11 +52,10 @@ STATIC_ROOT = abspath(PROJECT_ROOT, 'static')
 DOCUMENT_ROOT = abspath(PROJECT_ROOT, 'docs')
 
 MEDIA_URL = '/media/'
-
+STATIC_URL = '/static/'
 STATIC_URL = '/static/'
 
 
-ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 SECRET_KEY = 'sx405#tc)5m@s#^jh5l7$k#cl3ekg)jtbo2ds(n(kw@gp0t7x@'
 
@@ -118,6 +117,7 @@ LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
 LOGOUT_URL = '/accounts/signout/'
 AUTH_PROFILE_MODULE = 'profiles.Profile'
+USERENA_WITHOUT_USERNAMES = True
 
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_MUGSHOT_SIZE = 140

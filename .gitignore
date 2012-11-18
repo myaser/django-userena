@@ -1,3 +1,5 @@
+*.orig
+
 # Setup.py
 *.egg
 *egg-info
@@ -14,6 +16,7 @@ lib64
 include/
 src/
 dist/
+venv/
 
 # Certificates
 certs/
@@ -29,6 +32,8 @@ pip-log.txt
 demo_project/demo_project.db
 demo_project/settings_production.py
 demo_project/media/admin
+demo_project/static/
+*.db
 
 # Compiled
 *.pyc
@@ -36,6 +41,6 @@ demo_project/media/admin
 # Temp vim files
 *.swp
 
+# eclipse
 .project
 .pydevproject
-venv/
