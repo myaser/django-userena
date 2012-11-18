@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template
 
-from profiles.forms import SignupFormExtra, SignupFormSmart
+from profiles.forms import SignupFormExtra
 from userena.forms import SignupFormOnePassword
 
 from django.contrib import admin
@@ -14,9 +14,9 @@ urlpatterns = patterns('',
 
     # Demo Override the signup form with our own, which includes a 
     # first and last name.
-     (r'^accounts/signup/$',
-      'userena.views.signup',
-      {'signup_form': SignupFormSmart}),
+#     (r'^accounts/signup/$',
+#      'userena.views.signup',
+#      {'signup_form': SignupFormExtra}),
                      
     (r'^accounts/', include('userena.urls')),
     (r'^messages/', include('userena.contrib.umessages.urls')),
