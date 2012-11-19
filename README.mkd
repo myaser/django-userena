@@ -9,6 +9,11 @@ this fork has been changed to fit [kotob.me](http://beta.kotob.me) needs adding 
 * quick access view to signin/up quickly from single form
 * cutomizable activation e-mail that support multiMime types
 
+## installation:
+
+    pip install git+git://github.com/myaser/django-userena.git
+
+
 ## [Documentation](http://docs.django-userena.org/en/latest/index.html)
 
 Complete documentation about the
