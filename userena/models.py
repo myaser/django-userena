@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.core.exceptions import ImproperlyConfigured
 
 from userena.utils import get_gravatar, generate_sha1, get_protocol, get_datetime_now
@@ -18,6 +18,7 @@ from guardian.shortcuts import assign
 from easy_thumbnails.fields import ThumbnailerImageField
 
 import datetime, random
+from django.core.mail.message import EmailMessage
 
 PROFILE_PERMISSIONS = (
             ('view_profile', 'Can view profile'),
@@ -171,7 +172,9 @@ class UserenaSignup(models.Model):
             return True
         return False
 
-    def send_activation_email(self):
+    def send_activation_email(self,
+                              template='userena/emails/activation_email_message.txt',
+                              headers=None, attach_list=[]):
         """
         Sends a activation email to the user.
 
@@ -190,12 +193,18 @@ class UserenaSignup(models.Model):
                                    context)
         subject = ''.join(subject.splitlines())
 
-        message = render_to_string('userena/emails/activation_email_message.txt',
-                                   context)
-        send_mail(subject,
-                  message,
-                  settings.DEFAULT_FROM_EMAIL,
-                  [self.user.email,])
+        body = render_to_string(template, context)
+
+        message = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL,
+                  [self.user.email], headers=headers)
+
+        if template.split('.')[-1]=='html':
+            message.content_subtype = "html"
+
+        for attachment in attach_list:
+            message.attach(attachment)
+
+        message.send()
 
 class UserenaBaseProfile(models.Model):
     """ Base model needed for extra profile functionality """

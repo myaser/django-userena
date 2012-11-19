@@ -1,4 +1,5 @@
 import os, sys
+from email.mime.image import MIMEImage
 
 abspath = lambda *p: os.path.abspath(os.path.join(*p))
 
@@ -122,7 +123,21 @@ USERENA_WITHOUT_USERNAMES = True
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_MUGSHOT_SIZE = 140
 USERENA_WITHOUT_USERNAMES = True
-USERENA_ACTIVATION_REQUIRED = False
+USERENA_ACTIVATION_REQUIRED = True
+
+
+image_file = os.path.join(MEDIA_ROOT,
+                          'img/arrow-down.png')
+image = open(image_file, 'rb')  # open to read in binary mode
+img = MIMEImage(image.read())
+img.add_header('Content-ID', '<%s>' % 'invitation_image')
+img.add_header('Content-Disposition', 'inline')
+
+USERENA_ACTIVATION_EMAIL_PARAMETERS = {
+                'template':'404.html',
+                'headers':{'Content-ID': '<image1>'},
+                'attach_list':[img]
+                }
 
 # Test settings
 TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
