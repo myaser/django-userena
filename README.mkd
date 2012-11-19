@@ -5,6 +5,10 @@ account management. It's a fully customizable application that takes care of
 the signup, activation, messaging and more. It's BSD licensed, which means you
 can use it commercially for free!
 
+this fork has been changed to fit [kotob.me](http://beta.kotob.me) needs adding two main features:
+* quick access view to signin/up quickly from single form
+* cutomizable activation e-mail that support multiMime types
+
 ## [Documentation](http://docs.django-userena.org/en/latest/index.html)
 
 Complete documentation about the
