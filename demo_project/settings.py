@@ -41,6 +41,7 @@ LANGUAGES = (
     ('pt', ugettext('Portugese')),
     ('pt-br', ugettext('Brazilian Portuguese')),
     ('es', ugettext('Spanish')),
+    ('ar', ugettext('Arabic')),
 )
 
 SITE_ID = 1
