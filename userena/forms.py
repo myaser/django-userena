@@ -264,7 +264,7 @@ class FastAccessForm(SignupFormOnlyEmail, SignupFormOnePassword):
 
     def clean(self):
         """  """
-        if self.cleaned_data['email']:
+        if self.cleaned_data.get('email'):
             if User.objects.filter(email__iexact=self.cleaned_data['email']):
                 if UserenaSignup.objects.filter(user__email__iexact=self.cleaned_data['email']).exclude(activation_key=userena_settings.USERENA_ACTIVATED):
                     raise forms.ValidationError(_('This email is already in use but not confirmed. Please check your email for verification steps.'))
@@ -277,8 +277,6 @@ class FastAccessForm(SignupFormOnlyEmail, SignupFormOnePassword):
             else:
                 self.cleaned_data.update({'decision': 'signup'})
             return self.cleaned_data
-        else:
-            raise forms.ValidationError(_(u"email field is required"))
 
     def save(self):
         self.cleaned_data['password1'] = self.cleaned_data.pop('password')
